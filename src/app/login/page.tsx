@@ -4,12 +4,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
+import { CredentialsLoginForm } from "./credentials-login-form";
 import { GoogleLoginButton } from "./google-login-button";
 import styles from "./login.module.css";
 
 export const metadata: Metadata = {
   title: "Masuk | onYou",
-  description: "Masuk ke onYou dengan akun Google Anda.",
+  description: "Masuk ke onYou menggunakan akun Anda atau Google.",
 };
 
 const errorMessages: Record<string, string> = {
@@ -111,7 +112,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <p className={styles.step}>SELAMAT DATANG KEMBALI</p>
           <h2>Masuk ke onYou</h2>
           <p className={styles.description}>
-            Gunakan akun Google untuk proses masuk yang cepat dan aman.
+            Gunakan akun Anda atau lanjutkan dengan Google untuk masuk secara
+            cepat dan aman.
           </p>
 
           {errorMessage ? (
@@ -120,7 +122,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </div>
           ) : null}
 
-          <form action={loginWithGoogle} className={styles.form}>
+          <CredentialsLoginForm />
+
+          <div className={styles.separator} aria-hidden="true">
+            <span>atau</span>
+          </div>
+
+          <form action={loginWithGoogle} className={styles.googleForm}>
             <GoogleLoginButton disabled={!googleAuthConfigured} />
           </form>
 

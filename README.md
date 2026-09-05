@@ -42,7 +42,7 @@ npm run start
 
 ## Login dengan Google
 
-Halaman login tersedia di `/login` dan menggunakan Auth.js dengan Google OAuth.
+Halaman login tersedia di `/login` dengan form identitas/password serta Google OAuth melalui Auth.js. Form identitas/password siap dihubungkan ke layanan akun pengguna; integrasi Google aktif setelah environment OAuth dikonfigurasi.
 
 1. Salin `.env.example` menjadi `.env.local`.
 2. Isi `AUTH_SECRET`, `AUTH_GOOGLE_ID`, dan `AUTH_GOOGLE_SECRET`.

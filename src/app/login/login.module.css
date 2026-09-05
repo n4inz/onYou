@@ -11,6 +11,7 @@
   grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
   color: var(--ink);
   background: #f7f6f2;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
 }
 
 .page,
@@ -95,14 +96,14 @@
 .story h1 {
   max-width: 600px;
   margin: 22px 0 24px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
   font-size: clamp(48px, 5.4vw, 78px);
-  font-weight: 400;
+  font-weight: 640;
   line-height: .99;
   letter-spacing: -.045em;
 }
 
-.story h1 em { display: block; color: var(--gold-light); font-weight: 400; }
+.story h1 em { display: block; color: var(--gold-light); font-weight: 520; }
 
 .intro {
   max-width: 510px;
@@ -141,9 +142,9 @@
 
 .loginContent h2 {
   margin: 14px 0 10px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
   font-size: clamp(38px, 4vw, 54px);
-  font-weight: 400;
+  font-weight: 650;
   line-height: 1.08;
   letter-spacing: -.035em;
 }
@@ -155,7 +156,111 @@
   line-height: 1.65;
 }
 
-.form { width: 100%; }
+.credentialsForm,
+.googleForm { width: 100%; }
+
+.credentialsForm { display: grid; gap: 18px; }
+
+.field { display: grid; gap: 8px; }
+
+.field label,
+.labelRow a {
+  color: #44423c;
+  font-size: 12px;
+  font-weight: 680;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.labelRow a { color: #8b681c; font-weight: 600; text-underline-offset: 3px; }
+
+.field input {
+  width: 100%;
+  height: 52px;
+  padding: 0 15px;
+  border: 1px solid #cfcdc5;
+  border-radius: 12px;
+  color: #292823;
+  background: rgba(255,255,255,.86);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.field input::placeholder { color: #aaa79f; }
+.field input:focus { border-color: var(--gold); background: #fff; box-shadow: 0 0 0 3px rgba(201,154,46,.14); }
+
+.passwordField { position: relative; }
+.passwordField input { padding-right: 50px; }
+
+.passwordToggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  display: grid;
+  place-items: center;
+  color: #77756f;
+  background: transparent;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.passwordToggle svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.passwordToggle:focus-visible { outline: 2px solid var(--gold); border-radius: 7px; }
+
+.loginButton {
+  min-height: 52px;
+  border: 1px solid #a87817;
+  border-radius: 12px;
+  color: #2a2415;
+  background: linear-gradient(135deg, #f3d475, #c49328);
+  box-shadow: 0 9px 22px rgba(153,111,24,.18);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 760;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.loginButton:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(153,111,24,.24); }
+.loginButton:focus-visible { outline: 3px solid rgba(201,154,46,.34); outline-offset: 3px; }
+
+.credentialMessage {
+  margin: -2px 0 0;
+  color: #766020;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.separator {
+  margin: 23px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #98958d;
+  font-size: 11px;
+}
+
+.separator::before,
+.separator::after { content: ""; height: 1px; flex: 1; background: var(--silver); }
 
 .googleButton {
   width: 100%;
@@ -201,7 +306,7 @@
 .configurationNote { margin: 14px 0 0; color: #77746c; background: #efeee9; border-color: #b9b9b7; }
 
 .trustNote {
-  margin-top: 30px;
+  margin-top: 24px;
   padding-top: 25px;
   border-top: 1px solid var(--silver);
   display: flex;
@@ -255,5 +360,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .googleButton { transition: none; }
+  .googleButton,
+  .loginButton,
+  .field input { transition: none; }
 }
