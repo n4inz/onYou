@@ -39,3 +39,17 @@ Untuk menjalankan hasil production build:
 ```bash
 npm run start
 ```
+
+## Login dengan Google
+
+Halaman login tersedia di `/login` dan menggunakan Auth.js dengan Google OAuth.
+
+1. Salin `.env.example` menjadi `.env.local`.
+2. Isi `AUTH_SECRET`, `AUTH_GOOGLE_ID`, dan `AUTH_GOOGLE_SECRET`.
+3. Tambahkan callback URL berikut di Google Cloud Console:
+
+```text
+http://localhost:3000/api/auth/callback/google
+```
+
+Gunakan domain aplikasi sebagai pengganti `http://localhost:3000` pada lingkungan production. Jangan commit file `.env.local` atau kredensial OAuth.
