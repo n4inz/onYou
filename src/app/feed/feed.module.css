@@ -3,3 +3,14 @@
 @media(max-width:760px){.navInner{height:66px;padding:0 16px}.logo{font-size:18px}.logoMark{width:34px;height:34px}.search{width:40px;padding:0;justify-content:center;border:0;background:transparent}.search input{display:none}.search:focus-within{position:absolute;left:12px;right:12px;width:auto;padding:0 12px;border:1px solid #c29a49;background:#fff;z-index:4}.search:focus-within input{display:block}.language,.register{display:none}.heroInner{padding:55px 20px}.hero h1{font-size:45px}.heroStats{position:static;margin-top:35px;justify-content:space-between}.heroStats span{font-size:9px}.main{display:block;padding:29px 16px 60px}.mobileFilterButton{height:43px;margin-bottom:22px;padding:0 15px;display:flex;align-items:center;gap:8px;border:1px solid #d9d3c6;border-radius:11px;color:#6f5728;background:#fff;font-size:11px;font-weight:750}.sidebar{position:fixed;z-index:80;top:0;bottom:0;left:0;width:min(330px,88vw);padding:26px;overflow:auto;border-radius:0;transform:translateX(-105%);transition:transform .3s ease}.sidebarOpen{transform:translateX(0)}.mobileClose{display:grid;place-items:center;border:0;background:transparent;color:#666}.overlay{position:fixed;display:block;inset:0;z-index:70;border:0;background:rgba(25,23,19,.5);backdrop-filter:blur(3px)}.feedHeader h2{font-size:27px}.postCard{padding:20px}.postMeta{align-items:flex-start;gap:9px;flex-wrap:wrap}.postMeta .targetChip{margin-left:0}.footer{padding:38px 20px 24px}.footerTop,.footerBottom{flex-direction:column}.footerBottom nav{justify-content:flex-start}.socials{flex-wrap:wrap}}
 @media(max-width:420px){.hero h1{font-size:39px}.heroStats strong{font-size:22px}.heroStats div:nth-child(3){display:none}.postTop time{font-size:9px}.identity p{max-width:135px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.postText{font-size:12px}.postMeta>span:first-child{width:100%}.resultCount{display:none}}
 @media(prefers-reduced-motion:reduce){.page *{scroll-behavior:auto!important;transition:none!important}}
+
+/* feed_v2: flat sidebar and post list */
+.main{grid-template-columns:270px minmax(0,1fr);gap:42px}
+.sidebar{padding:0 32px 0 0;border:0;border-right:1px solid #d8d4ca;border-radius:0;background:transparent;box-shadow:none}
+.postList{gap:0;border-top:1px solid #ddd9d0}
+.postCard{padding:28px 4px 26px;overflow:visible;border:0;border-bottom:1px solid #ddd9d0;border-radius:0;background:transparent;box-shadow:none;transition:background-color .2s}
+.postCard:before{display:none}
+.postCard:hover{transform:none;border-color:#ddd9d0;background:rgba(255,255,255,.35);box-shadow:none}
+
+@media(max-width:1000px){.main{grid-template-columns:230px minmax(0,1fr);gap:28px}}
+@media(max-width:760px){.main{display:block}.sidebar{padding:26px;border-right:0;background:#f7f5f0}.postCard{padding:24px 2px}}
