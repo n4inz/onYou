@@ -4,7 +4,7 @@ export const ACCOUNT_NAVIGATION = [
   {
     key: "cv",
     label: "CV Nikah",
-    href: "/accounts/cv-pernikahan/create",
+    href: "/accounts/cv-pernikahan",
     activePrefix: "/accounts/cv-pernikahan",
     icon: "cv",
   },
