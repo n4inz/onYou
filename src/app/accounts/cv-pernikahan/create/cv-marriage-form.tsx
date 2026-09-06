@@ -16,9 +16,9 @@ const STEPS = [
 
 const REQUIRED: Record<number, string[]> = {
   1: ["fullName", "birthPlace", "birthDate", "domicile", "religion", "maritalStatus", "education", "job"],
-  2: ["childOrder", "siblingCount"],
-  3: ["marriageVision", "residencePlan", "financePlan", "childrenPlan", "householdRoles"],
-  4: ["partnerExpectation", "marriageTarget"],
+  2: [],
+  3: [],
+  4: ["marriageTarget"],
 };
 
 function cx(...names: Array<string | false | undefined>) {
@@ -48,7 +48,7 @@ type ControlProps = { label: string; name: string; value: string; onChange: (nam
 function Field({ label, name, value, onChange, required, placeholder, error, type = "text", suffix }: ControlProps & { type?: string; suffix?: string }) {
   return <label className={styles.field}>
     <span>{label}{required ? <b>Wajib</b> : <em>Opsional</em>}</span>
-    <div className={cx(styles.inputWrap, error && styles.invalid)}><input name={name} type={type} value={value} onChange={(event) => onChange(name, event.target.value)} placeholder={placeholder} aria-invalid={error}/>{suffix && <small>{suffix}</small>}</div>
+    <div className={cx(styles.inputWrap, error && styles.invalid)}><input name={name} type={type} value={value} onChange={(event) => onChange(name, event.target.value)} placeholder={placeholder} required={required} aria-invalid={error}/>{suffix && <small>{suffix}</small>}</div>
     {error && <i>{label} perlu diisi.</i>}
   </label>;
 }
@@ -56,7 +56,7 @@ function Field({ label, name, value, onChange, required, placeholder, error, typ
 function TextArea({ label, name, value, onChange, required, placeholder, error, rows = 4 }: ControlProps & { rows?: number }) {
   return <label className={cx(styles.field, styles.full)}>
     <span>{label}{required ? <b>Wajib</b> : <em>Opsional</em>}</span>
-    <textarea name={name} value={value} onChange={(event) => onChange(name, event.target.value)} placeholder={placeholder} rows={rows} className={error ? styles.invalid : ""} aria-invalid={error}/>
+    <textarea name={name} value={value} onChange={(event) => onChange(name, event.target.value)} placeholder={placeholder} rows={rows} className={error ? styles.invalid : ""} required={required} aria-invalid={error}/>
     {error && <i>{label} perlu diisi.</i>}
   </label>;
 }
@@ -98,6 +98,7 @@ export default function CvMarriageForm() {
   const submit = (event: FormEvent) => { event.preventDefault(); if (validate(4)) setSubmitted(true); };
   const togglePanel = (target: Exclude<Panel, null>) => setPanel((current) => current === target ? null : target);
   const completed = Object.values(values).filter(Boolean).length;
+  const progress = step * 25;
 
   return <div className={styles.page}>
     <header className={styles.header}><div className={styles.headerInner}>
@@ -121,8 +122,8 @@ export default function CvMarriageForm() {
       <aside className={cx(styles.sidebar, sidebarOpen && styles.sidebarOpen)}>
         <div className={styles.sidebarTitle}><span>Menu akun</span><button onClick={() => setSidebarOpen(false)} aria-label="Tutup menu"><Icon name="close"/></button></div>
         <nav aria-label="Navigasi akun">
+          <Link className={styles.activeMenu} href="/accounts/cv-pernikahan/create"><Icon name="cv"/>CV Nikah</Link>
           <Link href="/accounts/post"><Icon name="post"/>Postingan</Link>
-          <Link className={styles.activeMenu} href="/accounts/cv-pernikahan/create"><Icon name="cv"/>CV Pernikahan</Link>
           <Link href="#"><Icon name="chat"/>Pesan Masuk<span>3</span></Link>
           <Link href="#"><Icon name="settings"/>Pengaturan</Link>
         </nav>
@@ -135,7 +136,10 @@ export default function CvMarriageForm() {
         <ol className={styles.steps}>{STEPS.map((item) => <li key={item.number} className={cx(step === item.number && styles.currentStep, step > item.number && styles.doneStep)}><button type="button" onClick={() => item.number < step && setStep(item.number)} disabled={item.number > step}><span>{step > item.number ? <Icon name="check" size={15}/> : item.number}</span><small>{item.short}</small></button></li>)}</ol>
 
         <form onSubmit={submit} noValidate>
-          <div className={styles.sectionHead}><div><span>Tahap {step} dari 4</span><h2>{STEPS[step - 1].title}</h2><p>{STEPS[step - 1].description}</p></div><small>{Math.round((step / 4) * 100)}% progres</small></div>
+          <div className={styles.sectionHead}><div><span>Tahap {step} dari 4</span><h2>{STEPS[step - 1].title}</h2><p>{STEPS[step - 1].description}</p></div><small>{progress}% progres</small></div>
+          <div className={styles.progress} role="progressbar" aria-label="Progres pengisian CV Nikah" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
+            <span style={{ width: `${progress}%` }}/>
+          </div>
 
           {step === 1 && <div className={styles.fields}>
             <Field label="Nama lengkap" name="fullName" value={value("fullName")} onChange={update} required placeholder="Masukkan nama lengkap" error={errors.has("fullName")}/>
@@ -143,8 +147,7 @@ export default function CvMarriageForm() {
             <Field label="Tanggal lahir" name="birthDate" value={value("birthDate")} onChange={update} required type="date" error={errors.has("birthDate")}/>
             <Field label="Domisili sekarang" name="domicile" value={value("domicile")} onChange={update} required placeholder="Kota tempat tinggal" error={errors.has("domicile")}/>
             <Field label="Agama" name="religion" value={value("religion")} onChange={update} required placeholder="Masukkan agama" error={errors.has("religion")}/>
-            <Field label="Hobi" name="hobbies" value={value("hobbies")} onChange={update} placeholder="Contoh: membaca, memasak"/>
-            <label className={styles.field}><span>Status pernikahan<b>Wajib</b></span><select name="maritalStatus" value={value("maritalStatus")} onChange={(event) => update("maritalStatus", event.target.value)} className={errors.has("maritalStatus") ? styles.invalid : ""}><option value="">Pilih status</option><option>Belum pernah menikah</option><option>Pernah menikah</option></select>{errors.has("maritalStatus") && <i>Status pernikahan perlu dipilih.</i>}</label>
+            <label className={styles.field}><span>Status pernikahan<b>Wajib</b></span><select name="maritalStatus" value={value("maritalStatus")} onChange={(event) => update("maritalStatus", event.target.value)} className={errors.has("maritalStatus") ? styles.invalid : ""} required aria-invalid={errors.has("maritalStatus")}><option value="">Pilih status</option><option>Belum pernah menikah</option><option>Pernah menikah</option></select>{errors.has("maritalStatus") && <i>Status pernikahan perlu dipilih.</i>}</label>
             <Field label="Pendidikan terakhir" name="education" value={value("education")} onChange={update} required placeholder="Jenjang dan jurusan" error={errors.has("education")}/>
             <Field label="Pekerjaan" name="job" value={value("job")} onChange={update} required placeholder="Profesi atau bidang pekerjaan" error={errors.has("job")}/>
             <Field label="Pendapatan bulanan" name="income" value={value("income")} onChange={update} type="number" placeholder="0" suffix="Rupiah"/>
@@ -155,8 +158,8 @@ export default function CvMarriageForm() {
           {step === 2 && <div className={styles.fields}>
             <TextArea label="Tentang saya" name="about" value={value("about")} onChange={update} placeholder="Ceritakan karakter, nilai hidup, dan hal yang penting bagi Anda…"/>
             <div className={styles.subheading}><h3>Latar Belakang Keluarga</h3><p>Informasi singkat mengenai keluarga dan keseharian Anda.</p></div>
-            <Field label="Anak ke" name="childOrder" value={value("childOrder")} onChange={update} required type="number" placeholder="1" error={errors.has("childOrder")}/>
-            <Field label="Dari jumlah bersaudara" name="siblingCount" value={value("siblingCount")} onChange={update} required type="number" placeholder="3" error={errors.has("siblingCount")}/>
+            <Field label="Anak ke" name="childOrder" value={value("childOrder")} onChange={update} type="number" placeholder="1"/>
+            <Field label="Dari jumlah bersaudara" name="siblingCount" value={value("siblingCount")} onChange={update} type="number" placeholder="3"/>
             <TextArea label="Gambaran keluarga" name="familyOverview" value={value("familyOverview")} onChange={update} placeholder="Ceritakan suasana, kebiasaan, dan nilai keluarga…"/>
             <TextArea label="Tanggungan dalam keluarga saat ini" name="dependents" value={value("dependents")} onChange={update} placeholder="Jika ada dan ingin disampaikan…"/>
             <TextArea label="Keseharian dan gaya hidup" name="lifestyle" value={value("lifestyle")} onChange={update} placeholder="Ceritakan rutinitas dan gaya hidup Anda…"/>
@@ -167,16 +170,16 @@ export default function CvMarriageForm() {
           </div>}
 
           {step === 3 && <div className={styles.fields}>
-            <TextArea label="Visi pernikahan" name="marriageVision" value={value("marriageVision")} onChange={update} required error={errors.has("marriageVision")} placeholder="Apa arti dan tujuan pernikahan bagi Anda?" rows={5}/>
+            <TextArea label="Visi pernikahan" name="marriageVision" value={value("marriageVision")} onChange={update} placeholder="Apa arti dan tujuan pernikahan bagi Anda?" rows={5}/>
             <div className={styles.subheading}><h3>Rencana Setelah Menikah</h3><p>Bagikan harapan Anda sebagai bahan diskusi bersama pasangan.</p></div>
-            <TextArea label="Tempat tinggal" name="residencePlan" value={value("residencePlan")} onChange={update} required error={errors.has("residencePlan")} placeholder="Harapan tempat tinggal atau keterbukaan untuk berdiskusi…"/>
-            <TextArea label="Pengelolaan keuangan" name="financePlan" value={value("financePlan")} onChange={update} required error={errors.has("financePlan")} placeholder="Pandangan mengenai pemasukan, pengeluaran, dan tabungan…"/>
-            <TextArea label="Pandangan tentang anak dan pengasuhan" name="childrenPlan" value={value("childrenPlan")} onChange={update} required error={errors.has("childrenPlan")} placeholder="Harapan mengenai anak dan pola pengasuhan…"/>
-            <TextArea label="Pembagian peran rumah tangga" name="householdRoles" value={value("householdRoles")} onChange={update} required error={errors.has("householdRoles")} placeholder="Pandangan mengenai pembagian tanggung jawab…"/>
+            <TextArea label="Tempat tinggal" name="residencePlan" value={value("residencePlan")} onChange={update} placeholder="Harapan tempat tinggal atau keterbukaan untuk berdiskusi…"/>
+            <TextArea label="Pengelolaan keuangan" name="financePlan" value={value("financePlan")} onChange={update} placeholder="Pandangan mengenai pemasukan, pengeluaran, dan tabungan…"/>
+            <TextArea label="Pandangan tentang anak dan pengasuhan" name="childrenPlan" value={value("childrenPlan")} onChange={update} placeholder="Harapan mengenai anak dan pola pengasuhan…"/>
+            <TextArea label="Pembagian peran rumah tangga" name="householdRoles" value={value("householdRoles")} onChange={update} placeholder="Pandangan mengenai pembagian tanggung jawab…"/>
           </div>}
 
           {step === 4 && <div className={styles.fields}>
-            <TextArea label="Harapan terhadap pasangan" name="partnerExpectation" value={value("partnerExpectation")} onChange={update} required error={errors.has("partnerExpectation")} placeholder="Ceritakan nilai, karakter, dan harapan Anda…" rows={5}/>
+            <TextArea label="Harapan terhadap pasangan" name="partnerExpectation" value={value("partnerExpectation")} onChange={update} placeholder="Ceritakan nilai, karakter, dan harapan Anda…" rows={5}/>
             <Field label="Target waktu menikah" name="marriageTarget" value={value("marriageTarget")} onChange={update} required placeholder="Contoh: dalam 1–2 tahun" error={errors.has("marriageTarget")}/>
             <TextArea label="Persiapan yang sedang dilakukan" name="preparation" value={value("preparation")} onChange={update} placeholder="Ceritakan persiapan pribadi, finansial, atau keluarga…"/>
             <section className={styles.review}><div><span><Icon name="check" size={17}/></span><div><h3>Siap untuk ditinjau</h3><p>Anda telah mengisi {completed} informasi. Periksa kembali setiap tahap sebelum menyimpan CV.</p></div></div><button type="button" onClick={() => setStep(1)}>Tinjau dari awal</button></section>
