@@ -69,46 +69,19 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <main className={styles.page}>
-      <section className={styles.story} aria-labelledby="login-heading">
-        <div className={styles.storyGlow} aria-hidden="true" />
-        <div className={styles.orbitLarge} aria-hidden="true" />
-        <div className={styles.orbitSmall} aria-hidden="true" />
-
-        <Link className={styles.brand} href="/" aria-label="onYou beranda">
-          <Image
-            src="/onyou-logo.svg"
-            width={54}
-            height={54}
-            alt=""
-            priority
-          />
-          <span>onYou</span>
-        </Link>
-
-        <div className={styles.storyContent}>
-          <p className={styles.eyebrow}>RUANG UNTUK NIAT BAIK</p>
-          <h1 id="login-heading">
-            Temukan seseorang,
-            <em> mulai dari cerita.</em>
-          </h1>
-          <p className={styles.intro}>
-            Masuk untuk melanjutkan perjalanan menemukan pasangan yang sejalan
-            dalam nilai, mimpi, dan tujuan hidup.
-          </p>
-        </div>
-
-        <p className={styles.storyFootnote}>
-          Percakapan yang tulus. Identitas yang terjaga.
-        </p>
-      </section>
-
       <section className={styles.loginPanel} aria-label="Form login">
-        <div className={styles.mobileBrand}>
-          <Image src="/onyou-logo.svg" width={48} height={48} alt="" />
-          <span>onYou</span>
-        </div>
-
         <div className={styles.loginContent}>
+          <Link className={styles.brand} href="/" aria-label="onYou beranda">
+            <Image
+              src="/onyou-logo.svg"
+              width={72}
+              height={72}
+              alt=""
+              priority
+            />
+            <span>onYou</span>
+          </Link>
+
           <p className={styles.step}>SELAMAT DATANG KEMBALI</p>
           <h2>Masuk ke onYou</h2>
           <p className={styles.description}>
@@ -150,9 +123,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             Dengan masuk, Anda menyetujui Ketentuan Layanan dan Kebijakan
             Privasi onYou.
           </p>
-        </div>
 
-        <p className={styles.copyright}>© 2025–2026 onYou</p>
+          <p className={styles.copyright}>© 2025–2026 onYou</p>
+        </div>
       </section>
     </main>
   );

@@ -1,166 +1,104 @@
 .page {
   --gold: #c99a2e;
-  --gold-light: #f4d780;
   --ink: #282721;
   --muted: #77756f;
   --silver: #d8d9da;
-  min-height: 100svh;
   width: 100%;
+  min-height: 100svh;
   overflow-x: hidden;
-  display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
   color: var(--ink);
-  background: #f7f6f2;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(244, 215, 128, .34), transparent 28%),
+    radial-gradient(circle at 88% 90%, rgba(190, 192, 194, .45), transparent 34%),
+    linear-gradient(145deg, #fbfaf7, #efeee9);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
 }
 
 .page,
-.page * {
-  box-sizing: border-box;
+.page * { box-sizing: border-box; }
+
+.loginPanel {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  padding: 48px 24px;
+  display: grid;
+  place-items: center;
 }
 
-.story {
+.loginPanel::before,
+.loginPanel::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  border: 1px solid rgba(177, 132, 36, .2);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.loginPanel::before { width: 420px; height: 420px; left: -260px; top: -230px; }
+.loginPanel::after { width: 520px; height: 520px; right: -340px; bottom: -300px; }
+
+.loginContent {
   position: relative;
-  min-height: 100svh;
-  padding: 42px clamp(34px, 6vw, 92px) 38px;
-  overflow: hidden;
+  z-index: 1;
+  width: min(440px, 100%);
+  min-width: 0;
+  padding: 42px 38px 30px;
+  border: 1px solid rgba(190, 188, 180, .72);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, .78);
+  box-shadow: 0 24px 70px rgba(61, 57, 45, .1);
+  backdrop-filter: blur(16px);
+}
+
+.brand {
+  margin: 0 auto 30px;
   display: flex;
   flex-direction: column;
-  color: #fff;
-  background:
-    linear-gradient(142deg, rgba(255,255,255,.03), transparent 38%),
-    #22221f;
-}
-
-.story::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: .25;
-  background-image: repeating-linear-gradient(118deg, transparent 0 42px, rgba(255,255,255,.08) 43px 44px);
-  mask-image: linear-gradient(to bottom right, transparent 18%, #000 100%);
-}
-
-.storyGlow {
-  position: absolute;
-  width: 440px;
-  height: 440px;
-  right: -120px;
-  top: 12%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffe49a 0, #d7a83b 25%, #765719 69%, transparent 71%);
-  opacity: .78;
-  filter: drop-shadow(0 28px 70px rgba(211, 165, 56, .24));
-}
-
-.orbitLarge,
-.orbitSmall {
-  position: absolute;
-  border: 1px solid rgba(244, 215, 128, .42);
-  border-radius: 50%;
-}
-
-.orbitLarge { width: 680px; height: 680px; right: -230px; top: -115px; }
-.orbitSmall { width: 310px; height: 310px; right: -36px; top: 176px; }
-
-.brand,
-.mobileBrand {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
   align-items: center;
-  gap: 13px;
+  gap: 8px;
   width: fit-content;
-  color: inherit;
+  color: var(--ink);
   text-decoration: none;
-  font-size: 24px;
+  font-size: 25px;
   font-weight: 760;
-  letter-spacing: -.04em;
-}
-
-.storyContent {
-  position: relative;
-  z-index: 2;
-  width: min(610px, 86%);
-  margin: auto 0;
-}
-
-.eyebrow,
-.step {
-  color: var(--gold-light);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: .22em;
-}
-
-.story h1 {
-  max-width: 600px;
-  margin: 22px 0 24px;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(48px, 5.4vw, 78px);
-  font-weight: 640;
-  line-height: .99;
   letter-spacing: -.045em;
 }
 
-.story h1 em { display: block; color: var(--gold-light); font-weight: 520; }
+.brand img { filter: drop-shadow(0 8px 14px rgba(143, 102, 20, .16)); }
 
-.intro {
-  max-width: 510px;
-  color: #c9c9c5;
-  font-size: 16px;
-  line-height: 1.75;
+.step {
+  margin: 0;
+  color: #9c741b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-align: center;
 }
-
-.storyFootnote {
-  position: relative;
-  z-index: 2;
-  color: #96958e;
-  font-size: 12px;
-}
-
-.loginPanel {
-  min-height: 100svh;
-  min-width: 0;
-  padding: 40px clamp(30px, 6vw, 88px) 30px;
-  display: flex;
-  flex-direction: column;
-  background:
-    radial-gradient(circle at 100% 0, rgba(216,217,218,.72), transparent 31%),
-    linear-gradient(180deg, #fff, #f7f6f2);
-}
-
-.mobileBrand { display: none; }
-
-.loginContent {
-  width: min(430px, 100%);
-  min-width: 0;
-  margin: auto;
-}
-
-.step { color: #9c741b; }
 
 .loginContent h2 {
-  margin: 14px 0 10px;
+  margin: 12px 0 9px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(38px, 4vw, 54px);
+  font-size: clamp(34px, 4vw, 44px);
   font-weight: 650;
   line-height: 1.08;
-  letter-spacing: -.035em;
+  letter-spacing: -.04em;
+  text-align: center;
 }
 
 .description {
-  margin-bottom: 32px;
+  margin: 0 0 28px;
   color: var(--muted);
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
 }
 
 .credentialsForm,
 .googleForm { width: 100%; }
 
-.credentialsForm { display: grid; gap: 18px; }
-
+.credentialsForm { display: grid; gap: 17px; }
 .field { display: grid; gap: 8px; }
 
 .field label,
@@ -181,12 +119,12 @@
 
 .field input {
   width: 100%;
-  height: 52px;
-  padding: 0 15px;
+  height: 50px;
+  padding: 0 14px;
   border: 1px solid #cfcdc5;
   border-radius: 12px;
   color: #292823;
-  background: rgba(255,255,255,.86);
+  background: rgba(255, 255, 255, .9);
   font: inherit;
   font-size: 14px;
   outline: none;
@@ -194,7 +132,7 @@
 }
 
 .field input::placeholder { color: #aaa79f; }
-.field input:focus { border-color: var(--gold); background: #fff; box-shadow: 0 0 0 3px rgba(201,154,46,.14); }
+.field input:focus { border-color: var(--gold); background: #fff; box-shadow: 0 0 0 3px rgba(201, 154, 46, .14); }
 
 .passwordField { position: relative; }
 .passwordField input { padding-right: 50px; }
@@ -202,7 +140,7 @@
 .passwordToggle {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 9px;
   width: 34px;
   height: 34px;
   border: 0;
@@ -214,9 +152,8 @@
   cursor: pointer;
 }
 
-.passwordToggle svg {
-  width: 19px;
-  height: 19px;
+.passwordToggle svg,
+.trustNote svg {
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -224,24 +161,37 @@
   stroke-width: 1.6;
 }
 
+.passwordToggle svg { width: 19px; height: 19px; }
 .passwordToggle:focus-visible { outline: 2px solid var(--gold); border-radius: 7px; }
 
-.loginButton {
-  min-height: 52px;
-  border: 1px solid #a87817;
+.loginButton,
+.googleButton {
+  width: 100%;
+  min-height: 50px;
   border-radius: 12px;
-  color: #2a2415;
-  background: linear-gradient(135deg, #f3d475, #c49328);
-  box-shadow: 0 9px 22px rgba(153,111,24,.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font: inherit;
   font-size: 14px;
-  font-weight: 760;
+  font-weight: 750;
   cursor: pointer;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 
-.loginButton:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(153,111,24,.24); }
-.loginButton:focus-visible { outline: 3px solid rgba(201,154,46,.34); outline-offset: 3px; }
+.loginButton {
+  border: 1px solid #a87817;
+  color: #2a2415;
+  background: linear-gradient(135deg, #f3d475, #c49328);
+  box-shadow: 0 9px 22px rgba(153, 111, 24, .18);
+}
+
+.loginButton:hover,
+.googleButton:hover:not(:disabled) { transform: translateY(-2px); }
+.loginButton:hover { box-shadow: 0 12px 26px rgba(153, 111, 24, .24); }
+
+.loginButton:focus-visible,
+.googleButton:focus-visible { outline: 3px solid rgba(201, 154, 46, .34); outline-offset: 3px; }
 
 .credentialMessage {
   margin: -2px 0 0;
@@ -251,7 +201,7 @@
 }
 
 .separator {
-  margin: 23px 0;
+  margin: 21px 0;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -263,100 +213,70 @@
 .separator::after { content: ""; height: 1px; flex: 1; background: var(--silver); }
 
 .googleButton {
-  width: 100%;
-  min-height: 56px;
-  padding: 0 22px;
+  padding: 0 20px;
   border: 1px solid #cfcdc5;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 13px;
+  gap: 12px;
   color: #292823;
   background: #fff;
-  box-shadow: 0 9px 26px rgba(54, 51, 42, .08);
-  font: inherit;
-  font-size: 15px;
-  font-weight: 720;
-  cursor: pointer;
-  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  box-shadow: 0 8px 22px rgba(54, 51, 42, .06);
 }
 
-.googleButton:hover:not(:disabled) {
-  border-color: var(--gold);
-  transform: translateY(-2px);
-  box-shadow: 0 13px 30px rgba(116, 88, 26, .14);
-}
-
-.googleButton:focus-visible { outline: 3px solid rgba(201,154,46,.34); outline-offset: 3px; }
+.googleButton:hover:not(:disabled) { border-color: var(--gold); box-shadow: 0 11px 26px rgba(116, 88, 26, .12); }
 .googleButton:disabled { opacity: .58; cursor: not-allowed; box-shadow: none; }
-.googleIcon { width: 21px; height: 21px; flex: none; }
+.googleIcon { width: 20px; height: 20px; flex: none; }
 
 .alert,
 .configurationNote {
-  margin: 0 0 18px;
-  padding: 13px 15px;
+  margin: 0 0 17px;
+  padding: 12px 14px;
   border-left: 3px solid var(--gold);
   color: #6e551d;
   background: #fff8e4;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
-.configurationNote { margin: 14px 0 0; color: #77746c; background: #efeee9; border-color: #b9b9b7; }
+.configurationNote { margin: 13px 0 0; color: #77746c; background: #efeee9; border-color: #b9b9b7; }
 
 .trustNote {
-  margin-top: 24px;
-  padding-top: 25px;
+  margin-top: 22px;
+  padding-top: 20px;
   border-top: 1px solid var(--silver);
   display: flex;
-  gap: 12px;
+  gap: 11px;
   color: #77756f;
-  font-size: 12px;
-  line-height: 1.65;
+  font-size: 11px;
+  line-height: 1.55;
 }
 
-.trustNote svg {
-  width: 21px;
-  height: 21px;
-  flex: none;
-  fill: none;
-  stroke: #a47b22;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
-}
+.trustNote svg { width: 19px; height: 19px; flex: none; color: #a47b22; }
 
 .terms {
-  margin-top: 23px;
+  margin-top: 18px;
   color: #8a8881;
-  font-size: 11px;
-  line-height: 1.7;
+  font-size: 10px;
+  line-height: 1.6;
   text-align: center;
 }
 
-.terms a { color: #5d4a21; text-underline-offset: 3px; }
-.copyright { margin-top: auto; color: #99978f; font-size: 11px; text-align: center; }
+.copyright { margin: 18px 0 0; color: #99978f; font-size: 10px; text-align: center; }
 
-@media (max-width: 900px) {
-  .page { grid-template-columns: minmax(0, 1fr) minmax(370px, .92fr); }
-  .story { padding-inline: 35px; }
-  .storyGlow { right: -250px; }
-  .storyContent { width: 100%; }
+@media (max-width: 520px) {
+  .loginPanel { padding: 24px 16px; align-items: start; }
+  .loginContent { margin-top: 12px; padding: 30px 20px 24px; border-radius: 20px; }
+  .brand { margin-bottom: 23px; }
+  .brand img { width: 62px; height: 62px; }
+  .loginContent h2 { font-size: 34px; }
 }
 
-@media (max-width: 720px) {
-  .page { display: block; background: #f7f6f2; }
-  .story { display: none; }
-  .loginPanel { min-height: 100svh; padding: 24px 22px; }
-  .mobileBrand { display: inline-flex; font-size: 21px; }
-  .loginContent { margin: clamp(62px, 12vh, 118px) auto auto; }
-  .copyright { padding-top: 50px; }
-}
-
-@media (max-width: 390px) {
-  .loginPanel { padding-inline: 18px; }
-  .loginContent h2 { font-size: 36px; }
+@media (max-height: 760px) and (min-width: 521px) {
+  .loginPanel { padding-block: 24px; }
+  .loginContent { padding-block: 28px 22px; }
+  .brand { margin-bottom: 20px; }
+  .brand img { width: 56px; height: 56px; }
+  .description { margin-bottom: 20px; }
+  .trustNote { margin-top: 17px; padding-top: 16px; }
+  .terms, .copyright { margin-top: 13px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
