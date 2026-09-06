@@ -1,16 +1,13 @@
 .page {
   --gold: #c99a2e;
-  --ink: #282721;
-  --muted: #77756f;
+  --ink: #1d1d1f;
+  --muted: #5f6368;
   --silver: #d8d9da;
   width: 100%;
   min-height: 100svh;
   overflow-x: hidden;
   color: var(--ink);
-  background:
-    radial-gradient(circle at 12% 8%, rgba(244, 215, 128, .34), transparent 28%),
-    radial-gradient(circle at 88% 90%, rgba(190, 192, 194, .45), transparent 34%),
-    linear-gradient(145deg, #fbfaf7, #efeee9);
+  background: #f5f5f7;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -100,7 +97,7 @@
 
 .field label,
 .labelRow a {
-  color: #44423c;
+  color: #343438;
   font-size: 12px;
   font-weight: 680;
 }
@@ -112,7 +109,7 @@
   gap: 16px;
 }
 
-.labelRow a { color: #8b681c; font-weight: 600; text-underline-offset: 3px; }
+.labelRow a { color: #765600; font-weight: 600; text-underline-offset: 3px; }
 
 .field input {
   width: 100%;
@@ -120,7 +117,7 @@
   padding: 0 14px;
   border: 1px solid #cfcdc5;
   border-radius: 12px;
-  color: #292823;
+  color: #1d1d1f;
   background: rgba(255, 255, 255, .9);
   font: inherit;
   font-size: 14px;
@@ -128,7 +125,7 @@
   transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
-.field input::placeholder { color: #aaa79f; }
+.field input::placeholder { color: #737378; }
 .field input:focus { border-color: var(--gold); background: #fff; box-shadow: 0 0 0 3px rgba(201, 154, 46, .14); }
 
 .passwordField { position: relative; }
@@ -143,7 +140,7 @@
   border: 0;
   display: grid;
   place-items: center;
-  color: #77756f;
+  color: #5f6368;
   background: transparent;
   transform: translateY(-50%);
   cursor: pointer;
@@ -192,7 +189,7 @@
 
 .credentialMessage {
   margin: -2px 0 0;
-  color: #766020;
+  color: #624b0a;
   font-size: 12px;
   line-height: 1.55;
 }
@@ -202,7 +199,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #98958d;
+  color: #68686d;
   font-size: 11px;
 }
 
@@ -213,7 +210,7 @@
   padding: 0 20px;
   border: 1px solid #cfcdc5;
   gap: 12px;
-  color: #292823;
+  color: #1d1d1f;
   background: #fff;
   box-shadow: 0 8px 22px rgba(54, 51, 42, .06);
 }
@@ -241,7 +238,7 @@
   border-top: 1px solid var(--silver);
   display: flex;
   gap: 11px;
-  color: #77756f;
+  color: #5f6368;
   font-size: 11px;
   line-height: 1.55;
 }
@@ -250,13 +247,13 @@
 
 .terms {
   margin-top: 18px;
-  color: #8a8881;
+  color: #68686d;
   font-size: 10px;
   line-height: 1.6;
   text-align: center;
 }
 
-.copyright { margin: 18px 0 0; color: #99978f; font-size: 10px; text-align: center; }
+.copyright { margin: 18px 0 0; color: #68686d; font-size: 10px; text-align: center; }
 
 @media (max-width: 520px) {
   .loginPanel { padding: 24px 16px; align-items: start; }
