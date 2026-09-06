@@ -14,3 +14,27 @@
 
 @media(max-width:1000px){.main{grid-template-columns:230px minmax(0,1fr);gap:28px}}
 @media(max-width:760px){.main{display:block}.sidebar{padding:26px;border-right:0;background:#f7f5f0}.postCard{padding:24px 2px}}
+
+/* revisiWarna: unified light background and readable foreground colors */
+.page{--ink:#1d1d1f;--muted:#5f6368;background:#f5f5f7;color:var(--ink)}
+.navbar{border-color:#d2d2d7;background:rgba(245,245,247,.94)}
+.navLinks a{color:#515154}
+.navLinks a:hover,.navLinks .activeNav{color:#1d1d1f;background:#e8e8ed}
+.logo,.footerLogo{color:#1d1d1f}
+.hero{border-bottom:1px solid #d2d2d7;color:#1d1d1f;background:#f5f5f7}
+.heroGlow{display:none}
+.hero:before{border-color:rgba(151,151,156,.28);box-shadow:0 0 0 55px rgba(255,255,255,.24),0 0 0 115px rgba(255,255,255,.14)}
+.heroTag{color:#765600}
+.hero h1 em{color:#806000}
+.heroInner>p{color:#515154}
+.heroStats strong{color:#765600}
+.heroStats span{color:#68686d}
+.identity p,.postMeta,.postTop time,.empty p{color:#68686d}
+.postText{color:#343438}
+.footer{border-top:1px solid #d2d2d7;color:#5f6368;background:#f5f5f7}
+.footerTop{border-color:#d2d2d7}
+.socials a{border-color:#c7c7cc;color:#515154}
+.footerBottom a{color:#5f6368}
+.footerBottom a:hover{color:#765600}
+@media(max-width:1000px){.navLinks.navOpen{background:#f5f5f7}}
+@media(max-width:760px){.sidebar{background:#f5f5f7}}
