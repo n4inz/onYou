@@ -18,7 +18,7 @@ const REQUIRED: Record<number, string[]> = {
   1: ["fullName", "birthPlace", "birthDate", "domicile", "religion", "maritalStatus", "education", "job"],
   2: [],
   3: [],
-  4: ["marriageTarget"],
+  4: [],
 };
 
 function cx(...names: Array<string | false | undefined>) {
@@ -98,7 +98,6 @@ export default function CvMarriageForm() {
   const submit = (event: FormEvent) => { event.preventDefault(); if (validate(4)) setSubmitted(true); };
   const togglePanel = (target: Exclude<Panel, null>) => setPanel((current) => current === target ? null : target);
   const completed = Object.values(values).filter(Boolean).length;
-  const progress = step * 25;
 
   return <div className={styles.page}>
     <header className={styles.header}><div className={styles.headerInner}>
@@ -136,10 +135,7 @@ export default function CvMarriageForm() {
         <ol className={styles.steps}>{STEPS.map((item) => <li key={item.number} className={cx(step === item.number && styles.currentStep, step > item.number && styles.doneStep)}><button type="button" onClick={() => item.number < step && setStep(item.number)} disabled={item.number > step}><span>{step > item.number ? <Icon name="check" size={15}/> : item.number}</span><small>{item.short}</small></button></li>)}</ol>
 
         <form onSubmit={submit} noValidate>
-          <div className={styles.sectionHead}><div><span>Tahap {step} dari 4</span><h2>{STEPS[step - 1].title}</h2><p>{STEPS[step - 1].description}</p></div><small>{progress}% progres</small></div>
-          <div className={styles.progress} role="progressbar" aria-label="Progres pengisian CV Nikah" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
-            <span style={{ width: `${progress}%` }}/>
-          </div>
+          <div className={styles.sectionHead}><div><span>Tahap {step} dari 4</span><h2>{STEPS[step - 1].title}</h2><p>{STEPS[step - 1].description}</p></div></div>
 
           {step === 1 && <div className={styles.fields}>
             <Field label="Nama lengkap" name="fullName" value={value("fullName")} onChange={update} required placeholder="Masukkan nama lengkap" error={errors.has("fullName")}/>
@@ -180,7 +176,7 @@ export default function CvMarriageForm() {
 
           {step === 4 && <div className={styles.fields}>
             <TextArea label="Harapan terhadap pasangan" name="partnerExpectation" value={value("partnerExpectation")} onChange={update} placeholder="Ceritakan nilai, karakter, dan harapan Anda…" rows={5}/>
-            <Field label="Target waktu menikah" name="marriageTarget" value={value("marriageTarget")} onChange={update} required placeholder="Contoh: dalam 1–2 tahun" error={errors.has("marriageTarget")}/>
+            <Field label="Target waktu menikah" name="marriageTarget" value={value("marriageTarget")} onChange={update} placeholder="Contoh: dalam 1–2 tahun"/>
             <TextArea label="Persiapan yang sedang dilakukan" name="preparation" value={value("preparation")} onChange={update} placeholder="Ceritakan persiapan pribadi, finansial, atau keluarga…"/>
             <section className={styles.review}><div><span><Icon name="check" size={17}/></span><div><h3>Siap untuk ditinjau</h3><p>Anda telah mengisi {completed} informasi. Periksa kembali setiap tahap sebelum menyimpan CV.</p></div></div><button type="button" onClick={() => setStep(1)}>Tinjau dari awal</button></section>
           </div>}
