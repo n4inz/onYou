@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description: "Lengkapi CV Pernikahan Anda secara bertahap.",
 };
 
-export default function CreateMarriageCvPage() {
-  return <CvMarriageForm />;
+export default async function CreateMarriageCvPage({ searchParams }: { searchParams: Promise<{ mode?: string }> }) {
+  const { mode } = await searchParams;
+  return <CvMarriageForm editMode={mode === "edit"} />;
 }

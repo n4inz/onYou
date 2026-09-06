@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
+import { DEMO_FORM_VALUES } from "@/lib/marriage-cv";
 import { ACCOUNT_NAVIGATION, isAccountNavigationActive } from "../../account-navigation";
 import styles from "./cv-marriage.module.css";
 
@@ -63,10 +64,10 @@ function TextArea({ label, name, value, onChange, required, placeholder, error, 
   </label>;
 }
 
-export default function CvMarriageForm() {
+export default function CvMarriageForm({ editMode = false }: { editMode?: boolean }) {
   const pathname = usePathname();
   const [step, setStep] = useState(1);
-  const [values, setValues] = useState<Values>({});
+  const [values, setValues] = useState<Values>(editMode ? DEMO_FORM_VALUES : {});
   const [errors, setErrors] = useState<Set<string>>(new Set());
   const [panel, setPanel] = useState<Panel>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -134,11 +135,11 @@ export default function CvMarriageForm() {
       {sidebarOpen && <button className={styles.overlay} onClick={() => setSidebarOpen(false)} aria-label="Tutup menu akun"/>}
 
       <main className={styles.main}>
-        <div className={styles.intro}><span>CV Pernikahan</span><h1>Kenalkan diri dengan lebih bermakna.</h1><p>Lengkapi informasi secara jujur dan nyaman. Anda dapat kembali ke tahap sebelumnya kapan saja.</p></div>
+        <div className={styles.intro}><span>{editMode ? "Edit CV Pernikahan" : "CV Pernikahan"}</span><h1>{editMode ? "Perbarui cerita yang ingin Anda bagikan." : "Kenalkan diri dengan lebih bermakna."}</h1><p>{editMode ? "Data CV Anda sudah dimuat. Periksa dan perbarui informasi pada setiap tahap." : "Lengkapi informasi secara jujur dan nyaman. Anda dapat kembali ke tahap sebelumnya kapan saja."}</p></div>
         <ol className={styles.steps}>{STEPS.map((item) => <li key={item.number} className={cx(step === item.number && styles.currentStep, step > item.number && styles.doneStep)}><button type="button" onClick={() => item.number < step && setStep(item.number)} disabled={item.number > step}><span>{step > item.number ? <Icon name="check" size={15}/> : item.number}</span><small>{item.short}</small></button></li>)}</ol>
 
         <form onSubmit={submit} noValidate>
-          <div className={styles.sectionHead}><div><span>Tahap {step} dari 4</span><h2>{STEPS[step - 1].title}</h2><p>{STEPS[step - 1].description}</p></div></div>
+          <div className={styles.sectionHead}><div><span>{editMode ? "Mode edit · " : ""}Tahap {step} dari 4</span><h2>{STEPS[step - 1].title}</h2><p>{STEPS[step - 1].description}</p></div></div>
 
           {step === 1 && <div className={styles.fields}>
             <Field label="Nama lengkap" name="fullName" value={value("fullName")} onChange={update} required placeholder="Masukkan nama lengkap" error={errors.has("fullName")}/>
@@ -185,11 +186,11 @@ export default function CvMarriageForm() {
           </div>}
 
           {errors.size > 0 && <div className={styles.errorSummary}>Lengkapi {errors.size} kolom wajib yang ditandai sebelum melanjutkan.</div>}
-          <div className={styles.formActions}>{step > 1 ? <button type="button" className={styles.backButton} onClick={previous}><Icon name="arrow" size={17}/>Kembali</button> : <span/>}{step < 4 ? <button type="button" className={styles.nextButton} onClick={next}>Lanjutkan<Icon name="arrow" size={17}/></button> : <button type="submit" className={styles.nextButton}>Simpan CV<Icon name="check" size={17}/></button>}</div>
+          <div className={styles.formActions}>{step > 1 ? <button type="button" className={styles.backButton} onClick={previous}><Icon name="arrow" size={17}/>Kembali</button> : <span/>}{step < 4 ? <button type="button" className={styles.nextButton} onClick={next}>Lanjutkan<Icon name="arrow" size={17}/></button> : <button type="submit" className={styles.nextButton}>{editMode ? "Simpan perubahan" : "Simpan CV"}<Icon name="check" size={17}/></button>}</div>
         </form>
       </main>
     </div>
 
-    {submitted && <div className={styles.modalBackdrop}><section className={styles.successModal} role="dialog" aria-modal="true" aria-labelledby="success-title"><span><Icon name="check" size={27}/></span><h2 id="success-title">CV berhasil disimpan</h2><p>Informasi CV Pernikahan Anda sudah tersimpan dan dapat diperbarui kembali melalui menu akun.</p><button onClick={() => setSubmitted(false)}>Kembali ke CV Pernikahan</button></section></div>}
+    {submitted && <div className={styles.modalBackdrop}><section className={styles.successModal} role="dialog" aria-modal="true" aria-labelledby="success-title"><span><Icon name="check" size={27}/></span><h2 id="success-title">{editMode ? "Perubahan berhasil disimpan" : "CV berhasil disimpan"}</h2><p>Informasi CV Pernikahan Anda sudah tersimpan dan dapat diperbarui kembali melalui menu akun.</p><Link href="/accounts/cv-pernikahan">Kembali ke CV Nikah</Link></section></div>}
   </div>;
 }
