@@ -44,7 +44,9 @@
   z-index: 1;
   width: min(440px, 100%);
   min-width: 0;
-  padding: 28px 0;
+  padding: 28px 38px;
+  border-left: 1px solid rgba(174, 171, 162, .38);
+  border-right: 1px solid rgba(174, 171, 162, .38);
 }
 
 .brand {
@@ -258,7 +260,7 @@
 
 @media (max-width: 520px) {
   .loginPanel { padding: 24px 16px; align-items: start; }
-  .loginContent { margin-top: 12px; padding: 24px 4px; }
+  .loginContent { margin-top: 12px; padding: 24px 20px; }
   .brand { margin-bottom: 23px; }
   .brand img { width: 62px; height: 62px; }
   .loginContent h2 { font-size: 34px; }
