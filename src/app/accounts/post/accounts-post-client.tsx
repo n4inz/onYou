@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ACCOUNT_NAVIGATION, isAccountNavigationActive } from "../account-navigation";
 import styles from "./accounts-post.module.css";
 
 type Post = { id: number; text: string; published: string; views: number };
@@ -42,6 +44,7 @@ function Icon({ name, size = 20 }: { name: "bell" | "chat" | "globe" | "chevron"
 }
 
 export default function AccountsPostClient() {
+  const pathname = usePathname();
   const [posts, setPosts] = useState(INITIAL_POSTS);
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
@@ -118,10 +121,10 @@ export default function AccountsPostClient() {
         <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
           <div className={styles.sidebarHead}><span>Menu akun</span><button onClick={() => setSidebarOpen(false)} aria-label="Tutup navigasi"><Icon name="close"/></button></div>
           <nav aria-label="Navigasi akun">
-            <Link className={styles.activeMenu} href="/accounts/post"><Icon name="post"/>Postingan<span>{posts.length}</span></Link>
-            <Link href="#"><Icon name="cv"/>CV Pernikahan</Link>
-            <Link href="#"><Icon name="chat"/>Pesan Masuk<span>3</span></Link>
-            <Link href="#"><Icon name="settings"/>Pengaturan</Link>
+            {ACCOUNT_NAVIGATION.map((item) => {
+              const active = isAccountNavigationActive(pathname, item.activePrefix);
+              return <Link key={item.key} className={active ? styles.activeMenu : undefined} href={item.href} aria-current={active ? "page" : undefined} onClick={() => setSidebarOpen(false)}><Icon name={item.icon}/>{item.label}{item.key === "posts" && <span>{posts.length}</span>}{item.key === "messages" && <span>3</span>}</Link>;
+            })}
           </nav>
           <div className={styles.sidebarHelp}><span>Butuh bantuan?</span><p>Temukan jawaban atau hubungi tim dukungan onYou.</p><a href="#">Pusat Bantuan</a></div>
         </aside>

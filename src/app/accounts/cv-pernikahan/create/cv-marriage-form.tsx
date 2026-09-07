@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
+import { ACCOUNT_NAVIGATION, isAccountNavigationActive } from "../../account-navigation";
 import styles from "./cv-marriage.module.css";
 
 type Panel = "language" | "notification" | "message" | null;
@@ -62,6 +64,7 @@ function TextArea({ label, name, value, onChange, required, placeholder, error, 
 }
 
 export default function CvMarriageForm() {
+  const pathname = usePathname();
   const [step, setStep] = useState(1);
   const [values, setValues] = useState<Values>({});
   const [errors, setErrors] = useState<Set<string>>(new Set());
@@ -121,10 +124,10 @@ export default function CvMarriageForm() {
       <aside className={cx(styles.sidebar, sidebarOpen && styles.sidebarOpen)}>
         <div className={styles.sidebarTitle}><span>Menu akun</span><button onClick={() => setSidebarOpen(false)} aria-label="Tutup menu"><Icon name="close"/></button></div>
         <nav aria-label="Navigasi akun">
-          <Link className={styles.activeMenu} href="/accounts/cv-pernikahan/create"><Icon name="cv"/>CV Nikah</Link>
-          <Link href="/accounts/post"><Icon name="post"/>Postingan</Link>
-          <Link href="#"><Icon name="chat"/>Pesan Masuk<span>3</span></Link>
-          <Link href="#"><Icon name="settings"/>Pengaturan</Link>
+          {ACCOUNT_NAVIGATION.map((item) => {
+            const active = isAccountNavigationActive(pathname, item.activePrefix);
+            return <Link key={item.key} className={active ? styles.activeMenu : undefined} href={item.href} aria-current={active ? "page" : undefined} onClick={() => setSidebarOpen(false)}><Icon name={item.icon}/>{item.label}{item.key === "messages" && <span>3</span>}</Link>;
+          })}
         </nav>
         <div className={styles.sidebarInfo}><strong>Privasi Anda penting</strong><p>Informasi sensitif hanya ditampilkan sesuai pengaturan privasi yang Anda pilih.</p></div>
       </aside>
