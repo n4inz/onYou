@@ -81,7 +81,7 @@ export default function MessagesClient() {
   };
 
   const openRequest = (uid: string, status: ConnectionStatus) => {
-    if (status !== "declined") router.push(`/pesan/${uid}`);
+    if (status === "accepted") router.push(`/pesan/${uid}`);
   };
 
   const stop = (event: MouseEvent) => event.stopPropagation();
@@ -122,14 +122,18 @@ export default function MessagesClient() {
           {requests.map((request) => {
             const status = statuses[request.uid] ?? request.status;
             const declined = status === "declined";
-            return <article key={request.uid} className={`${styles.messageItem} ${declined ? styles.declined : ""}`} role={declined ? undefined : "link"} tabIndex={declined ? -1 : 0} onClick={() => openRequest(request.uid, status)} onKeyDown={(event) => { if (!declined && (event.key === "Enter" || event.key === " ")) openRequest(request.uid, status); }} data-status={status} data-uid={request.uid}>
+            const accepted = status === "accepted";
+            return <article key={request.uid} className={`${styles.messageItem} ${declined ? styles.declined : ""} ${status === "pending" ? styles.pendingLocked : ""}`} role={accepted ? "link" : undefined} tabIndex={accepted ? 0 : -1} onClick={() => openRequest(request.uid, status)} onKeyDown={(event) => { if (accepted && (event.key === "Enter" || event.key === " ")) openRequest(request.uid, status); }} data-status={status} data-uid={request.uid}>
               <div className={`${styles.personAvatar} ${request.gender === "Pria" ? styles.male : styles.female}`}><span>{request.initials}</span></div>
               <div className={styles.messageBody}>
                 <div className={styles.messageTop}><div><strong>{getDisplayName(request)} ingin terhubung dengan Anda.</strong><span className={`${styles.status} ${styles[status]}`}>{status === "pending" ? "Menunggu" : status === "accepted" ? "Diterima" : "Ditolak"}</span></div><time><Icon name="calendar" size={14}/>{request.requestedAt}</time></div>
                 <div className={styles.personMeta}><span><Icon name="location" size={14}/>{request.location}</span><span><Icon name="user" size={14}/>{request.age} tahun · {request.gender}</span></div>
                 <p className={styles.firstMessage}>{request.message.slice(0, 255)}</p>
                 <div className={styles.itemFooter}>
-                  <span className={styles.cvLink}>{declined ? "CV tidak lagi tersedia" : <><span>Lihat CV Nikah</span><Icon name="arrow" size={14}/></>}</span>
+                  {declined ? <span className={styles.cvLink}>CV tidak lagi tersedia</span> : <div className={styles.itemLinks}>
+                    <Link className={styles.cvLink} href={`/cv-nikah/${request.uid}`} target="_blank" onClick={stop}><span>Lihat CV Nikah</span><Icon name="arrow" size={14}/></Link>
+                    <span className={styles.detailHint}>{accepted ? "Klik pesan untuk memulai review" : "Terima dahulu untuk membuka detail"}</span>
+                  </div>}
                   <div className={styles.actions} onClick={stop}>
                     {status !== "declined" && <button className={styles.rejectButton} onClick={() => setRejectUid(request.uid)}><Icon name="x" size={15}/>Tolak</button>}
                     {status !== "accepted" && status !== "declined" && <button className={styles.acceptButton} onClick={() => updateStatus(request.uid, "accepted")}><Icon name="check" size={15}/>Terima</button>}
