@@ -18,8 +18,8 @@ export const ACCOUNT_NAVIGATION = [
   {
     key: "messages",
     label: "Pesan Masuk",
-    href: "#",
-    activePrefix: "/accounts/messages",
+    href: "/pesan",
+    activePrefix: "/pesan",
     icon: "chat",
   },
   {
