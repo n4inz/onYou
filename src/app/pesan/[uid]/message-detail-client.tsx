@@ -20,7 +20,7 @@ import styles from "../messages.module.css";
 type Panel = "language" | "notification" | "message" | null;
 type IconName = "menu" | "close" | "globe" | "bell" | "chat" | "chevron" | "cv" | "post" | "settings" | "location" | "user" | "arrow" | "lock" | "check" | "x" | "exchange";
 
-const EMPTY_REVIEW: ConnectionReviewState = { requestedFields: [], reviewSubmitted: false };
+const EMPTY_REVIEW: ConnectionReviewState = { requestedFields: [], reviewSubmitted: false, candidateApproved: false };
 
 function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   const common = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
@@ -94,6 +94,16 @@ export default function MessageDetailClient({ request }: { request: ConnectionRe
     localStorage.setItem(CONNECTION_REVIEW_STORAGE_KEY, JSON.stringify({ ...reviews, [request.uid]: review }));
   }, [request.uid, review]);
 
+  useEffect(() => {
+    if (!review?.reviewSubmitted || review.candidateApproved) return;
+    const timer = window.setTimeout(() => {
+      setReview((current) => current ? { ...current, candidateApproved: true } : current);
+      setFeedback(`${displayName} menyetujui review CV selesai.`);
+      window.setTimeout(() => setFeedback(""), 2800);
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [displayName, review?.candidateApproved, review?.reviewSubmitted]);
+
   const showFeedback = (message: string) => {
     setFeedback(message);
     window.setTimeout(() => setFeedback(""), 2800);
@@ -121,7 +131,7 @@ export default function MessageDetailClient({ request }: { request: ConnectionRe
     showFeedback(`Notifikasi penolakan telah dikirim kepada ${displayName}.`);
   };
 
-  const currentStage = review?.reviewSubmitted ? 2 : 1;
+  const currentStage = review?.reviewSubmitted && review.candidateApproved ? 2 : 1;
   const stages = ["Review CV", "Persetujuan bersama", "Lanjut perkenalan"];
 
   return <div className={styles.page}>
@@ -171,10 +181,10 @@ export default function MessageDetailClient({ request }: { request: ConnectionRe
           <section className={styles.profileIntro}>
             <div className={`${styles.personAvatar} ${request.gender === "Pria" ? styles.male : styles.female}`}><span>{request.initials}</span></div>
             <div><span className={styles.eyebrow}>Review CV Calon Pasangan</span><h1>{displayName}</h1><div className={styles.personMeta}><span><Icon name="location" size={14}/>{request.location}</span><span><Icon name="user" size={14}/>{request.age} tahun · {request.gender}</span></div></div>
-            <span className={styles.detailStatus}>{review.reviewSubmitted ? "Menunggu persetujuan" : "Sedang direview"}</span>
+            <span className={styles.detailStatus}>{review.candidateApproved ? "Tahap 2 terbuka" : review.reviewSubmitted ? "Menunggu persetujuan" : "Sedang direview"}</span>
           </section>
 
-          {review.reviewSubmitted && <div className={styles.reviewNotice} role="status"><Icon name="check"/><div><strong>Review CV selesai telah diajukan.</strong><p>Kami telah mengirimkan pengajuan kepada {displayName}. Tahap berikutnya terbuka setelah calon pasangan menyetujui review telah usai.</p></div></div>}
+          {review.reviewSubmitted && <div className={styles.reviewNotice} role="status"><Icon name="check"/><div><strong>{review.candidateApproved ? "Review CV disetujui kedua pihak." : "Review CV selesai telah diajukan."}</strong><p>{review.candidateApproved ? `Anda dan ${displayName} telah menyelesaikan Tahap 1. Tahap 2 kini siap digunakan.` : `Kami telah mengirimkan pengajuan kepada ${displayName} dan sedang menunggu persetujuan.`}</p>{review.candidateApproved && <Link className={styles.continueStage} href={`/pesan/${request.uid}/tahap-2`}>Lanjut ke Tahap 2 <Icon name="arrow" size={14}/></Link>}</div></div>}
 
           <section className={styles.introMessage}><span>Pesan perkenalan</span><p>“{request.message.slice(0,255)}”</p></section>
 
