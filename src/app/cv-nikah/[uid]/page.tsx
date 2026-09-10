@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getConnectionRequest } from "@/lib/connection-requests";
 import PublicMarriageCv from "./public-marriage-cv";
 
 export const metadata: Metadata = {
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 
 export default async function PublicMarriageCvPage({ params }: { params: Promise<{ uid: string }> }) {
   const { uid } = await params;
-  return <PublicMarriageCv uid={uid} />;
+  return <PublicMarriageCv uid={uid} request={getConnectionRequest(uid)} />;
 }

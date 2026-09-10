@@ -1,4 +1,14 @@
+import {
+  MARRIAGE_CV_SECTIONS,
+  MarriageCvFieldKey,
+} from "@/lib/marriage-cv";
+
 export type ConnectionStatus = "pending" | "accepted" | "declined";
+
+export type ConnectionReviewState = {
+  requestedFields: MarriageCvFieldKey[];
+  reviewSubmitted: boolean;
+};
 
 export type ConnectionRequest = {
   uid: string;
@@ -24,12 +34,13 @@ export type ConnectionRequest = {
     partnerExpectation: string;
     marriageTarget: string;
   };
-  visibleFields: string[];
+  visibleFields: MarriageCvFieldKey[];
 };
 
 export const CONNECTION_STATUS_STORAGE_KEY = "onyou-connection-status-v1";
+export const CONNECTION_REVIEW_STORAGE_KEY = "onyou-connection-review-v1";
 
-const sharedVisibleFields = ["name", "birth", "location", "religion", "maritalStatus", "education", "job", "height", "weight", "about", "marriageVision", "partnerExpectation", "marriageTarget"];
+const sharedVisibleFields: MarriageCvFieldKey[] = ["name", "birth", "domicile", "religion", "maritalStatus", "education", "job", "height", "weight", "about", "marriageVision", "partnerExpectation", "marriageTarget"];
 
 export const CONNECTION_REQUESTS: ConnectionRequest[] = [
   { uid:"aulia-s", name:"Aulia Safitri", initials:"AS", useInitials:true, location:"Bandung, Jawa Barat", age:28, gender:"Wanita", requestedAt:"7 September 2026", message:"Assalamu’alaikum, saya tertarik dengan cara Anda memandang keluarga dan pernikahan. Jika berkenan, saya ingin saling mengenal dengan proses yang baik dan terarah.", status:"pending", cv:{birth:"Bandung, 18 April 1998",religion:"Islam",maritalStatus:"Belum pernah menikah",education:"S1 Psikologi",job:"People Development Specialist",height:"160 cm",weight:"50 kg",about:"Pribadi yang hangat, suka belajar, dan dekat dengan keluarga.",marriageVision:"Membangun keluarga yang tenang, saling mendukung, dan bertumbuh dalam nilai agama.",partnerExpectation:"Komunikatif, bertanggung jawab, dan siap melibatkan keluarga.",marriageTarget:"Dalam 1–2 tahun"}, visibleFields:sharedVisibleFields },
@@ -53,4 +64,31 @@ export function getConnectionRequest(uid: string) {
 
 export function getDisplayName(request: ConnectionRequest) {
   return request.useInitials ? request.initials : request.name;
+}
+
+export function getConnectionCvSections(request: ConnectionRequest) {
+  const values: Partial<Record<MarriageCvFieldKey, string>> = {
+    name: getDisplayName(request),
+    birth: request.cv.birth,
+    domicile: request.location,
+    religion: request.cv.religion,
+    maritalStatus: request.cv.maritalStatus,
+    education: request.cv.education,
+    job: request.cv.job,
+    height: request.cv.height,
+    weight: request.cv.weight,
+    about: request.cv.about,
+    marriageVision: request.cv.marriageVision,
+    partnerExpectation: request.cv.partnerExpectation,
+    marriageTarget: request.cv.marriageTarget,
+  };
+
+  return MARRIAGE_CV_SECTIONS.map((section) => ({
+    ...section,
+    fields: section.fields.map((field) => ({
+      ...field,
+      value: values[field.key],
+      visible: request.visibleFields.includes(field.key),
+    })),
+  }));
 }
