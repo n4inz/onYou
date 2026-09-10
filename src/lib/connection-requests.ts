@@ -14,6 +14,7 @@ export type ConnectionReviewState = {
 export type StageTwoOption = "media" | "meeting";
 export type StageTwoRequestStatus = "idle" | "pending" | "approved" | "declined";
 export type StageTwoMediaKind = "photo" | "video";
+export type StageTwoCompletionStatus = "idle" | "pending" | "approved" | "declined";
 
 export type StageTwoMessage = {
   id: string;
@@ -31,6 +32,7 @@ export type StageTwoState = {
   candidateMediaReady: boolean;
   mediaExchanged: boolean;
   messages: StageTwoMessage[];
+  completionStatus?: StageTwoCompletionStatus;
 };
 
 export type ConnectionRequest = {

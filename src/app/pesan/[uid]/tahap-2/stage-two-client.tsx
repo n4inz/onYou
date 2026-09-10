@@ -30,6 +30,7 @@ const EMPTY_STAGE_TWO: StageTwoState = {
   candidateMediaReady: false,
   mediaExchanged: false,
   messages: [],
+  completionStatus: "idle",
 };
 
 function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
@@ -73,7 +74,7 @@ function readStageTwo(uid: string) {
   try {
     const saved = localStorage.getItem(CONNECTION_STAGE_TWO_STORAGE_KEY);
     const values = saved ? JSON.parse(saved) as Record<string, StageTwoState> : {};
-    return values[uid] ?? EMPTY_STAGE_TWO;
+    return { ...EMPTY_STAGE_TWO, ...(values[uid] ?? {}) };
   } catch { return EMPTY_STAGE_TWO; }
 }
 
@@ -97,6 +98,7 @@ export default function StageTwoClient({ request }: { request: ConnectionRequest
   const [feedback, setFeedback] = useState("");
   const [message, setMessage] = useState("");
   const [mediaPreview, setMediaPreview] = useState("");
+  const [rejectOpen, setRejectOpen] = useState(false);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
@@ -144,6 +146,15 @@ export default function StageTwoClient({ request }: { request: ConnectionRequest
     }, 1500);
     return () => window.clearTimeout(timer);
   }, [displayName, stage?.candidateMediaReady, stage?.ownMediaName, stage?.requestStatus]);
+
+  useEffect(() => {
+    if (stage?.completionStatus !== "pending") return;
+    const timer = window.setTimeout(() => {
+      setStage((current) => current ? { ...current, completionStatus: "approved" } : current);
+      setFeedback(`${displayName} menyetujui penyelesaian Perkenalan Lanjutan. Tahap 3 telah dibuka.`);
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [displayName, stage?.completionStatus]);
 
   useEffect(() => {
     if (!feedback) return;
@@ -199,9 +210,32 @@ export default function StageTwoClient({ request }: { request: ConnectionRequest
     }, () => setFeedback("Izin lokasi ditolak. Aktifkan izin lokasi untuk berbagi Maps."), { enableHighAccuracy: false, timeout: 8000 });
   };
 
+  const introductionComplete = stage?.option === "media"
+    ? stage.requestStatus === "approved" && stage.mediaExchanged
+    : stage?.option === "meeting"
+      ? stage.requestStatus === "approved" && stage.messages.length > 0
+      : false;
+
+  const submitCompletion = () => {
+    if (!stage || !introductionComplete || stage.completionStatus !== "idle") return;
+    setStage({ ...stage, completionStatus: "pending" });
+    setFeedback("Anda mengajukan Perkenalan Lanjutan selesai. Pengajuan dikirim kepada calon pasangan Anda.");
+  };
+
+  const rejectCandidate = () => {
+    const saved = localStorage.getItem(CONNECTION_STATUS_STORAGE_KEY);
+    const values = saved ? JSON.parse(saved) as Record<string, ConnectionStatus> : {};
+    localStorage.setItem(CONNECTION_STATUS_STORAGE_KEY, JSON.stringify({ ...values, [request.uid]: "declined" }));
+    setStage((current) => current ? { ...current, completionStatus: "declined" } : current);
+    setStatus("declined");
+    setRejectOpen(false);
+    setFeedback(`${displayName} telah ditolak dan menerima notifikasi.`);
+  };
+
   const accessAllowed = status === "accepted" && reviewReady === true;
   const approved = stage?.requestStatus === "approved";
-  const notificationText = stage?.requestStatus === "pending" ? `Permintaan Tahap 2 menunggu jawaban ${displayName}.` : stage?.requestStatus === "approved" ? `${displayName} menyetujui pilihan Tahap 2.` : "Belum ada permintaan Tahap 2.";
+  const completionStatus = stage?.completionStatus ?? "idle";
+  const notificationText = completionStatus === "pending" ? `Penyelesaian Perkenalan Lanjutan menunggu persetujuan ${displayName}.` : completionStatus === "approved" ? `${displayName} menyetujui penyelesaian Tahap 2.` : stage?.requestStatus === "pending" ? `Permintaan Tahap 2 menunggu jawaban ${displayName}.` : stage?.requestStatus === "approved" ? `${displayName} menyetujui pilihan Tahap 2.` : "Belum ada permintaan Tahap 2.";
 
   return <div className={styles.page}>
     <header className={styles.header}><div className={styles.headerInner}>
@@ -239,8 +273,8 @@ export default function StageTwoClient({ request }: { request: ConnectionRequest
         </div> : <>
           <ol className={styles.progress} aria-label="Tahapan koneksi">
             <li className={styles.completed}><span><Icon name="check" size={15}/></span><div><small>Tahap 1</small><strong>Review CV</strong></div></li>
-            <li className={styles.active}><span>2</span><div><small>Tahap 2</small><strong>Perkenalan lanjutan</strong></div></li>
-            <li><span>3</span><div><small>Tahap 3</small><strong>Keputusan bersama</strong></div></li>
+            <li className={completionStatus === "approved" ? styles.completed : styles.active}><span>{completionStatus === "approved" ? <Icon name="check" size={15}/> : "2"}</span><div><small>Tahap 2</small><strong>Perkenalan lanjutan</strong></div></li>
+            <li className={completionStatus === "approved" ? styles.active : undefined}><span>3</span><div><small>Tahap 3</small><strong>Keputusan bersama</strong></div></li>
           </ol>
 
           <section className={styles.intro}>
@@ -284,9 +318,23 @@ export default function StageTwoClient({ request }: { request: ConnectionRequest
             </div>
             <form className={styles.chatForm} onSubmit={sendMessage}><label><span className="sr-only">Tulis pesan</span><input value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Diskusikan waktu, tempat, atau pendamping…" maxLength={500}/></label><button type="button" className={styles.locationButton} onClick={shareLocation}><Icon name="location" size={18}/><span>Bagikan lokasi</span></button><button type="submit" className={styles.sendButton} disabled={!message.trim()} aria-label="Kirim pesan"><Icon name="send" size={18}/></button></form>
           </section>}
+
+          <section className={styles.completion} aria-labelledby="completion-title">
+            <div className={styles.sectionHeading}><span>04</span><div><h2 id="completion-title">Selesaikan perkenalan lanjutan</h2><p>Ajukan penyelesaian setelah proses yang dipilih benar-benar selesai.</p></div></div>
+            <div className={styles.completionStatus}>
+              <div><small>Status penyelesaian</small><strong>{completionStatus === "approved" ? "Disetujui kedua pihak" : completionStatus === "pending" ? "Menunggu persetujuan calon" : "Belum diajukan"}</strong></div>
+              <p>{completionStatus === "approved" ? "Perkenalan Lanjutan telah disetujui selesai. Tahap berikutnya kini tersedia." : completionStatus === "pending" ? `Pengajuan sudah dikirim dan menunggu persetujuan ${displayName}.` : introductionComplete ? "Persyaratan Tahap 2 terpenuhi dan siap diajukan." : "Selesaikan pertukaran media atau mulai percakapan pertemuan sebelum mengajukan."}</p>
+            </div>
+            {completionStatus === "pending" && <div className={styles.completionNotice} role="status"><Icon name="bell"/><p>Anda mengajukan Perkenalan Lanjutan selesai. Kami akan mengirimkan ke calon pasangan Anda untuk menyetujui bahwa perkenalan telah usai dan menuju ke tahap berikutnya.</p></div>}
+            <div className={styles.finalActions}>
+              <button className={styles.rejectButton} onClick={() => setRejectOpen(true)}>Tolak Calon Ini</button>
+              {completionStatus === "approved" ? <Link className={styles.nextButton} href={`/pesan/${request.uid}/tahap-3`}>Lanjut ke Tahap 3 <Icon name="arrow" size={15}/></Link> : <button className={styles.completeButton} onClick={submitCompletion} disabled={!introductionComplete || completionStatus !== "idle"}>{completionStatus === "pending" ? "Menunggu persetujuan" : "Perkenalan Selesai"}</button>}
+            </div>
+          </section>
         </>}
       </main>
     </div>
+    {rejectOpen && <div className={styles.modalBackdrop} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setRejectOpen(false); }}><div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="reject-title"><span><Icon name="close"/></span><h2 id="reject-title">Tolak {displayName}?</h2><p>Proses perkenalan akan dihentikan, akses Tahap 2 dikunci, dan calon pasangan akan menerima notifikasi penolakan.</p><div><button onClick={() => setRejectOpen(false)}>Batal</button><button onClick={rejectCandidate}>Ya, Tolak Calon</button></div></div></div>}
     {feedback && <div className={styles.toast} role="status"><Icon name="check" size={16}/>{feedback}</div>}
   </div>;
 }
