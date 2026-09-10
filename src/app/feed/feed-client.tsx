@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import styles from "./feed.module.css";
 
-type Gender = "Pria" | "Wanita";
-type Post = {
+export type Gender = "Pria" | "Wanita";
+export type Post = {
   id: number;
   initials: string;
   gender: Gender;
@@ -20,7 +20,7 @@ type Post = {
   text: string;
 };
 
-const POSTS: Post[] = [
+export const POSTS: Post[] = [
   { id: 1, initials: "AR", gender: "Pria", age: 29, location: "Bandung", province: "Jawa Barat", job: "Software Engineer", education: "S1", marriageTarget: 1, published: "12 menit lalu", views: 184, text: "Saya pribadi yang tenang, suka membaca dan menikmati akhir pekan dengan mencoba kedai kopi baru. Sedang mencari seseorang yang hangat, komunikatif, menyukai keluarga, dan siap bertumbuh bersama menuju hubungan serius. Bagi saya, hubungan yang baik dibangun dari kejujuran, rasa hormat, dan kesediaan untuk saling mendengarkan." },
   { id: 2, initials: "NS", gender: "Wanita", age: 27, location: "Yogyakarta", province: "DI Yogyakarta", job: "Arsitek", education: "S1", marriageTarget: 2, published: "35 menit lalu", views: 271, text: "Arsitek yang menyukai ruang-ruang tenang, museum, dan perjalanan spontan. Saya berharap bertemu pria dewasa, bertanggung jawab, punya tujuan hidup jelas, dan menghargai karier pasangannya." },
   { id: 3, initials: "DP", gender: "Pria", age: 32, location: "Surabaya", province: "Jawa Timur", job: "Pengusaha", education: "S1", marriageTarget: 1, published: "1 jam lalu", views: 392, text: "Membangun usaha kuliner bersama keluarga dan percaya bahwa rumah adalah tempat terbaik untuk pulang. Mencari pasangan yang sederhana, penyayang, dan siap menjalani proses dengan niat baik." },
