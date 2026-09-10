@@ -15,6 +15,13 @@ export type StageTwoOption = "media" | "meeting";
 export type StageTwoRequestStatus = "idle" | "pending" | "approved" | "declined";
 export type StageTwoMediaKind = "photo" | "video";
 export type StageTwoCompletionStatus = "idle" | "pending" | "approved" | "declined";
+export type StageThreeDecision = "accept" | "decline" | null;
+
+export type StageThreeState = {
+  startedAt: number;
+  ownDecision: StageThreeDecision;
+  candidateDecision: StageThreeDecision;
+};
 
 export type StageTwoMessage = {
   id: string;
@@ -65,6 +72,7 @@ export type ConnectionRequest = {
 export const CONNECTION_STATUS_STORAGE_KEY = "onyou-connection-status-v1";
 export const CONNECTION_REVIEW_STORAGE_KEY = "onyou-connection-review-v1";
 export const CONNECTION_STAGE_TWO_STORAGE_KEY = "onyou-connection-stage-two-v1";
+export const CONNECTION_STAGE_THREE_STORAGE_KEY = "onyou-connection-stage-three-v1";
 
 const sharedVisibleFields: MarriageCvFieldKey[] = ["name", "birth", "domicile", "religion", "maritalStatus", "education", "job", "height", "weight", "about", "marriageVision", "partnerExpectation", "marriageTarget"];
 
