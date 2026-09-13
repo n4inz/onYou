@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { CONNECTION_REQUESTS, getDisplayName } from "@/lib/connection-requests";
@@ -59,7 +60,7 @@ export default function LandingClient() {
 
   return <div className={styles.page}>
     <header className={styles.header}><div className={styles.headerInner}>
-      <Link className={styles.logo} href="/" aria-label="onYou halaman utama"><span>oY</span><strong>onYou</strong></Link>
+      <Link className={styles.logo} href="/" aria-label="onYou halaman utama"><Image src="/onyou-logo.svg" alt="" width={42} height={42} priority/><strong>onYou</strong></Link>
       <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`} aria-label="Navigasi utama"><Link href="/feed">Feed</Link><a href="#cara-kerja">Cara kerja</a><a href="#cerita">Cerita mereka</a><Link className={styles.mobileAuth} href="/login">Masuk</Link><Link className={styles.mobileAuth} href="/register">Daftar</Link></nav>
       <div className={styles.actions} ref={panelRef}>
         <button className={styles.language} onClick={() => setPanel(panel === "language" ? null : "language")} aria-expanded={panel === "language"}><Icon name="globe"/><span>ID</span><Icon name="chevron" size={12}/></button>
@@ -96,6 +97,12 @@ export default function LandingClient() {
       <section className={styles.cta}><span className={styles.eyebrow}>Langkah kecil, tujuan yang berarti</span><h2>Siap mengenal seseorang dengan cara yang lebih jujur?</h2><p>Mulai dari cerita Anda. Temukan seseorang yang tidak hanya menarik perhatian, tetapi juga memahami arah hidup yang ingin dibangun.</p><div><Link href="/register">Buat akun gratis <Icon name="arrow"/></Link><Link href="/feed">Lihat cerita pengguna</Link></div></section>
     </main>
 
-    <footer className={styles.footer}><div><Link className={styles.logo} href="/"><span>oY</span><strong>onYou</strong></Link><p>Ruang untuk menemukan pasangan melalui nilai, kesiapan, dan tujuan yang sejalan.</p></div><nav aria-label="Tautan footer"><Link href="/feed">Feed</Link><Link href="/login">Masuk</Link><Link href="/register">Daftar</Link><a href="#cara-kerja">Cara kerja</a></nav><small>© 2025–2026 onYou. Dibuat untuk hubungan yang lebih bermakna.</small></footer>
+    <footer className={styles.footer}>
+      <div className={styles.footerTop}>
+        <div><Link className={styles.logo} href="/"><Image src="/onyou-logo.svg" alt="" width={44} height={44}/><strong>onYou</strong></Link><p>Ruang yang aman untuk menemukan pasangan melalui nilai, kesiapan, dan tujuan yang sejalan.</p></div>
+        <div className={styles.socials}>{[["f","Facebook"],["in","LinkedIn"],["𝕏","X"],["▶","YouTube"],["◎","Instagram"],["♪","TikTok"]].map(([icon,label]) => <a key={label} href="#" aria-label={label}>{icon}</a>)}</div>
+      </div>
+      <div className={styles.footerBottom}><p>© 2025–2026 onYou</p><nav aria-label="Tautan legal">{["Terms of Service","Privacy Policy","CA Notice at Collection","Your Privacy Choices","Accessibility","Sitemap"].map((item) => <a key={item} href="#">{item}</a>)}</nav></div>
+    </footer>
   </div>;
 }
