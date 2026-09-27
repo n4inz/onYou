@@ -20,6 +20,8 @@ const TESTIMONIALS = [
   { initials: "RA", location: "Bandung", duration: "Menikah setelah 9 bulan", quote: "Kami memulai dari percakapan tentang nilai keluarga. Proses yang bertahap membuat kami lebih tenang untuk saling mengenal." },
   { initials: "DN", location: "Surabaya", duration: "Menikah setelah 11 bulan", quote: "CV Nikah membantu kami membicarakan hal-hal penting sejak awal, tanpa kehilangan ruang untuk bertumbuh secara alami." },
   { initials: "FM", location: "Makassar", duration: "Menikah setelah 8 bulan", quote: "Bukan sekadar menemukan profil yang menarik, kami menemukan seseorang yang siap berjalan menuju tujuan yang sama." },
+  { initials: "AY", location: "Yogyakarta", duration: "Menikah setelah 10 bulan", quote: "Tahap demi tahap membuat kami berani terbuka dengan tetap menjaga batas yang sehat. Keluarga pun merasa lebih tenang." },
+  { initials: "LS", location: "Jakarta", duration: "Menikah setelah 12 bulan", quote: "Kami dipertemukan oleh tujuan yang serupa, lalu diberi ruang untuk saling memastikan tanpa harus terburu-buru." },
 ];
 
 function Icon({ name, size = 19 }: { name: IconName; size?: number }) {
@@ -44,10 +46,59 @@ function formatViews(value: number) {
   return new Intl.NumberFormat("id-ID").format(value);
 }
 
+function Carousel({ label, items }: { label: string; items: ReactNode[] }) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const updateControls = () => {
+      const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+      setAtStart(viewport.scrollLeft <= 2);
+      setAtEnd(maxScroll <= 2 || viewport.scrollLeft >= maxScroll - 2);
+    };
+
+    updateControls();
+    viewport.addEventListener("scroll", updateControls, { passive: true });
+    const observer = new ResizeObserver(updateControls);
+    observer.observe(viewport);
+
+    return () => {
+      viewport.removeEventListener("scroll", updateControls);
+      observer.disconnect();
+    };
+  }, [items.length]);
+
+  const move = (direction: -1 | 1) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    viewport.scrollBy({ left: direction * viewport.clientWidth * 0.82, behavior: "smooth" });
+  };
+
+  return <div className={styles.carousel} aria-label={label}>
+    <div className={styles.carouselViewport} ref={viewportRef} tabIndex={0}>
+      <div className={styles.carouselTrack}>{items}</div>
+    </div>
+    <div className={styles.carouselControls}>
+      <span>Geser untuk melihat lainnya</span>
+      <div>
+        <button className={styles.previous} type="button" onClick={() => move(-1)} disabled={atStart} aria-label={`Lihat ${label} sebelumnya`}><Icon name="chevron" size={17}/></button>
+        <button type="button" onClick={() => move(1)} disabled={atEnd} aria-label={`Lihat ${label} berikutnya`}><Icon name="chevron" size={17}/></button>
+      </div>
+    </div>
+  </div>;
+}
+
 export default function LandingClient() {
   const [panel, setPanel] = useState<Panel>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [appliedItems, setAppliedItems] = useState<Set<string>>(() => new Set());
+  const [applicationNotice, setApplicationNotice] = useState("");
   const panelRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const close = (event: MouseEvent) => {
       if (panelRef.current && !panelRef.current.contains(event.target as Node)) setPanel(null);
@@ -55,10 +106,39 @@ export default function LandingClient() {
     document.addEventListener("mousedown", close);
     return () => document.removeEventListener("mousedown", close);
   }, []);
+  useEffect(() => {
+    const page = pageRef.current;
+    if (!page || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let frame = 0;
+    const updateScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => page.style.setProperty("--parallax-scroll", `${Math.min(window.scrollY, 900)}px`));
+    };
+    const updatePointer = (event: PointerEvent) => {
+      const x = (event.clientX / window.innerWidth - 0.5) * 2;
+      const y = (event.clientY / window.innerHeight - 0.5) * 2;
+      page.style.setProperty("--parallax-x", x.toFixed(3));
+      page.style.setProperty("--parallax-y", y.toFixed(3));
+    };
+
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    window.addEventListener("pointermove", updatePointer, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateScroll);
+      window.removeEventListener("pointermove", updatePointer);
+    };
+  }, []);
   const popularPosts = useMemo(() => [...POSTS].sort((a, b) => b.views - a.views).slice(0, 5), []);
   const popularCvs = useMemo(() => [...CONNECTION_REQUESTS].sort((a, b) => (CV_VIEW_COUNTS[b.uid] ?? 0) - (CV_VIEW_COUNTS[a.uid] ?? 0)).slice(0, 5), []);
+  const applyCv = (key: string, name: string) => {
+    setAppliedItems((current) => new Set(current).add(key));
+    setApplicationNotice(`CV berhasil diajukan kepada ${name}.`);
+  };
 
-  return <div className={styles.page}>
+  return <div className={styles.page} ref={pageRef}>
     <header className={styles.header}><div className={styles.headerInner}>
       <Link className={styles.logo} href="/" aria-label="onYou halaman utama"><Image src="/onyou-logo.svg" alt="" width={42} height={42} priority/><strong>onYou</strong></Link>
       <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`} aria-label="Navigasi utama"><Link href="/feed">Feed</Link><a href="#cara-kerja">Cara kerja</a><a href="#cerita">Cerita mereka</a><Link className={styles.mobileAuth} href="/login">Masuk</Link><Link className={styles.mobileAuth} href="/register">Daftar</Link></nav>
@@ -77,7 +157,7 @@ export default function LandingClient() {
     </div></header>
 
     <main>
-      <section className={styles.hero}><div className={styles.heroGlow} aria-hidden="true"/><div className={styles.heroInner}>
+      <section className={styles.hero}><div className={styles.heroGlow} aria-hidden="true"/><div className={`${styles.parallaxOrb} ${styles.parallaxOrbOne}`} aria-hidden="true"/><div className={`${styles.parallaxOrb} ${styles.parallaxOrbTwo}`} aria-hidden="true"/><div className={styles.heroInner}>
         <div className={styles.heroCopy}><span className={styles.eyebrow}>Hubungan serius dimulai dari niat yang jelas</span><h1>Bukan sekadar bertemu.<br/><em>Temukan yang sejalan.</em></h1><p>onYou membantu Anda mengenal seseorang melalui nilai, kesiapan, dan tujuan hidup—dengan proses yang lebih tenang, aman, dan bermakna.</p><div className={styles.heroActions}><Link href="/register">Mulai perjalanan <Icon name="arrow"/></Link><Link href="/feed">Jelajahi Feed</Link></div><small>Kenali dengan jujur · Putuskan tanpa tekanan · Jaga privasi bersama</small></div>
         <div className={styles.heroVisual} aria-label="Gambaran proses menemukan pasangan sejalan"><div className={styles.orbit}><span>AS</span><span>NZ</span><i><Icon name="heart" size={23}/></i></div><p>Berawal dari nilai yang sama</p><strong>Menuju keputusan bersama</strong></div>
       </div></section>
@@ -88,11 +168,19 @@ export default function LandingClient() {
         <article><span>03</span><Icon name="heart"/><h3>Keputusan tanpa tekanan</h3><p>Ambil waktu untuk mengenal, melibatkan keluarga, dan memilih berdasarkan kesiapan yang nyata.</p></article>
       </div></section>
 
-      <section className={styles.popular}><div className={styles.sectionHeader}><div><span className={styles.eyebrow}>Sedang banyak dibaca</span><h2>Feed populer</h2></div><Link href="/feed">Lihat semua Feed <Icon name="arrow" size={16}/></Link></div><div className={styles.postList}>{popularPosts.length ? popularPosts.map((post, index) => <Link href="/feed" className={styles.postRow} key={post.id}><span className={styles.rank}>{String(index + 1).padStart(2, "0")}</span><span className={`${styles.avatar} ${post.gender === "Wanita" ? styles.woman : ""}`}>{post.initials}</span><div><strong>{post.initials} · {post.age} tahun</strong><small>{post.location}, {post.province} · {post.published}</small><p>{post.text}</p></div><span className={styles.views}><Icon name="eye" size={15}/>{formatViews(post.views)}</span></Link>) : <p className={styles.empty}>Belum ada Feed populer untuk ditampilkan.</p>}</div></section>
+      <section className={styles.popular}><div className={styles.sectionHeader}><div><span className={styles.eyebrow}>Sedang banyak dibaca</span><h2>Feed populer</h2></div><Link href="/feed">Lihat semua Feed <Icon name="arrow" size={16}/></Link></div>{popularPosts.length ? <Carousel label="Feed populer" items={popularPosts.map((post, index) => {
+        const key = `feed-${post.id}`;
+        const applied = appliedItems.has(key);
+        return <article className={styles.postRow} key={post.id}><span className={styles.rank}>{String(index + 1).padStart(2, "0")}</span><span className={`${styles.avatar} ${post.gender === "Wanita" ? styles.woman : ""}`}>{post.initials}</span><Link className={styles.cardLink} href="/feed"><strong>{post.initials} · {post.age} tahun</strong><small>{post.location}, {post.province} · {post.published}</small><p>{post.text}</p></Link><span className={styles.views}><Icon name="eye" size={15}/>{formatViews(post.views)}</span><button className={styles.applyButton} type="button" onClick={() => applyCv(key, post.initials)} disabled={applied}>{applied ? "CV diajukan" : "Apply CV"}</button></article>;
+      })}/> : <p className={styles.empty}>Belum ada Feed populer untuk ditampilkan.</p>}{applicationNotice && <p className={styles.applicationNotice} role="status">{applicationNotice}</p>}</section>
 
-      <section className={styles.popularCvs}><div className={styles.sectionHeader}><div><span className={styles.eyebrow}>Profil publik pilihan komunitas</span><h2>CV Nikah paling banyak dilihat</h2></div><p>Informasi yang tampil mengikuti pilihan privasi pemilik CV.</p></div><div className={styles.cvList}>{popularCvs.length ? popularCvs.map((cv, index) => <Link className={styles.cvRow} href={`/cv-nikah/${cv.uid}`} key={cv.uid}><span className={styles.rank}>{String(index + 1).padStart(2, "0")}</span><span className={`${styles.avatar} ${cv.gender === "Wanita" ? styles.woman : ""}`}>{cv.initials}</span><div><strong>{getDisplayName(cv)}</strong><small>{cv.age} tahun · {cv.location}</small><p>{cv.cv.job} · Target menikah {cv.cv.marriageTarget.toLowerCase()}</p></div><span className={styles.views}><Icon name="eye" size={15}/>{formatViews(CV_VIEW_COUNTS[cv.uid] ?? 0)}</span><Icon name="chevron" size={16}/></Link>) : <p className={styles.empty}>Belum ada CV Nikah publik untuk ditampilkan.</p>}</div></section>
+      <section className={styles.popularCvs}><div className={styles.sectionHeader}><div><span className={styles.eyebrow}>Profil publik pilihan komunitas</span><h2>CV Nikah paling banyak dilihat</h2></div><p>Informasi yang tampil mengikuti pilihan privasi pemilik CV.</p></div>{popularCvs.length ? <Carousel label="CV Nikah populer" items={popularCvs.map((cv, index) => {
+        const key = `cv-${cv.uid}`;
+        const applied = appliedItems.has(key);
+        return <article className={styles.cvRow} key={cv.uid}><span className={styles.rank}>{String(index + 1).padStart(2, "0")}</span><span className={`${styles.avatar} ${cv.gender === "Wanita" ? styles.woman : ""}`}>{cv.initials}</span><Link className={styles.cardLink} href={`/cv-nikah/${cv.uid}`}><strong>{getDisplayName(cv)}</strong><small>{cv.age} tahun · {cv.location}</small><p>{cv.cv.job} · Target menikah {cv.cv.marriageTarget.toLowerCase()}</p></Link><span className={styles.views}><Icon name="eye" size={15}/>{formatViews(CV_VIEW_COUNTS[cv.uid] ?? 0)}</span><button className={styles.applyButton} type="button" onClick={() => applyCv(key, getDisplayName(cv))} disabled={applied}>{applied ? "CV diajukan" : "Apply CV"}</button></article>;
+      })}/> : <p className={styles.empty}>Belum ada CV Nikah publik untuk ditampilkan.</p>}</section>
 
-      <section className={styles.stories} id="cerita"><div className={styles.sectionIntro}><span className={styles.eyebrow}>Cerita yang memberi harapan</span><h2>Ketika niat baik menemukan jalannya.</h2><p>Contoh testimoni untuk tahap desain. Konten final hanya boleh menggunakan cerita pasangan yang telah memberi izin publikasi.</p></div><div className={styles.storyGrid}>{TESTIMONIALS.map((story) => <blockquote key={story.initials}><span>Contoh testimoni</span><p>“{story.quote}”</p><footer><i>{story.initials}</i><div><strong>{story.initials} · {story.location}</strong><small>{story.duration}</small></div></footer></blockquote>)}</div></section>
+      <section className={styles.stories} id="cerita"><div className={styles.sectionIntro}><span className={styles.eyebrow}>Cerita yang memberi harapan</span><h2>Ketika niat baik menemukan jalannya.</h2><p>Contoh testimoni untuk tahap desain. Konten final hanya boleh menggunakan cerita pasangan yang telah memberi izin publikasi.</p></div><Carousel label="Testimoni pasangan" items={TESTIMONIALS.map((story) => <blockquote className={styles.storyCard} key={story.initials}><span>Contoh testimoni</span><p>“{story.quote}”</p><footer><i>{story.initials}</i><div><strong>{story.initials} · {story.location}</strong><small>{story.duration}</small></div></footer></blockquote>)}/></section>
 
       <section className={styles.cta}><span className={styles.eyebrow}>Langkah kecil, tujuan yang berarti</span><h2>Siap mengenal seseorang dengan cara yang lebih jujur?</h2><p>Mulai dari cerita Anda. Temukan seseorang yang tidak hanya menarik perhatian, tetapi juga memahami arah hidup yang ingin dibangun.</p><div><Link href="/register">Buat akun gratis <Icon name="arrow"/></Link><Link href="/feed">Lihat cerita pengguna</Link></div></section>
     </main>
